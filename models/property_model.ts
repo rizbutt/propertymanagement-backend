@@ -45,16 +45,6 @@ const PropertySchema: Schema = new Schema<IProperty>({
       bathrooms: { type: Number, required: true },
       additionalFeatures: { type: String },
     },
-    sections: [
-      {
-        sectionName: { type: String}, // Dynamically named section
-        sectionType: { type: String, enum: ['Shared', 'Single'] },
-        rooms: { type: Number },
-        kitchens: { type: Number},
-        bathrooms: { type: Number },
-        lobbies: { type: Number },
-      },
-    ],
     building_images: [{
       data: { type: Buffer, required: true },
       description: { type: String }

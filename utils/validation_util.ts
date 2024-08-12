@@ -10,6 +10,7 @@ import Tenant from '../models/tenant_model';
 import User from  '../models/user_model'
 import Rent from '@/models/rent_model';
 import Expense from '@/models/expense_model';
+import Section from '@/models/section_model'
 
 export async function validateModelData(modelName: string, data: Record<string, any>): Promise<string | null> {
   try {
@@ -32,7 +33,11 @@ export async function validateModelData(modelName: string, data: Record<string, 
       case 'Expense':
         const expense = new Expense(data);
         await expense.validate(); // Validates the data based on the Tenant schema
-        break;      
+        break;
+      case 'Section':
+        const section = new Section(data);
+        await section.validate(); // Validates the data based on the Tenant schema
+        break;              
       default:
         return `Unknown model: ${modelName}`;
     }

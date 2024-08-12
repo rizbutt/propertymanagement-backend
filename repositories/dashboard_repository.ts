@@ -1,149 +1,100 @@
-import Property from '../models/property_model';
-import Tenant from '../models/tenant_model';
-import Rent from '../models/rent_model';
+import Section from '@/models/section_model';
+import Tenant from '@/models/tenant_model';
+import Expense from '@/models/expense_model';
+import Rent from '@/models/rent_model';
+import Property from '@/models/property_model'
 
 export class DashboardRepository {
 
-    /**
-     * Gets the count of all properties.
-     * 
-     * @param user_id The ID of the user to filter properties.
-     * @returns A Promise resolving to the count of properties.
-     */
-    async getPropertiesCount(user_id: string): Promise<number> {
-        try {
-            return await Property.countDocuments({ user_id }).exec();
-        } catch (error) {
-            console.error('Error getting properties count:', error);
-            throw new Error('Could not fetch properties count.');
-        }
+
+    // Total number properties by user id which is logged
+    public async countTotalProperty(userId:string) {
+        return await Property.countDocuments({user_id:userId});
+    }
+    // Total number Tenants by user id which is logged
+    public async countTotalTenants(userId:string) {
+        return await Tenant.countDocuments({user_id:userId});
+    }
+    // Total number section by user id which is logged
+    public async countTotalSections(userId:string) {
+        return await Section.countDocuments({user_id:userId});
     }
 
-    /**
-     * Gets the count of all tenants.
-     * 
-     * @param user_id The ID of the user to filter tenants.
-     * @returns A Promise resolving to the count of tenants.
-     */
-    async getTenantsCount(user_id: string): Promise<number> {
-        try {
-            return await Tenant.countDocuments({ user_id }).exec();
-        } catch (error) {
-            console.error('Error getting tenants count:', error);
-            throw new Error('Could not fetch tenants count.');
-        }
+   // Total number of sections by user ID those are rent out
+    public async countRentedOutSections(userId: string) {
+        const allSections = await Section.find({user_id:userId});
+        const rentedOutSections = await Tenant.find({ user_id: userId });
+        const rentedOutSectionIds = rentedOutSections.map(tenant => tenant.sectionName);
+
+        return allSections.filter(section => rentedOutSectionIds.includes(section.sectionName)).length;
+    }
+    // Total number of building by user ID those are rent out
+    public async countRentedOutBuildings(userId: string) {
+        const allProperties = await Property.find({user_id:userId});
+        const rentedOutSections = await Tenant.find({ user_id: userId });
+        const rentedOutSectionIds = rentedOutSections.map(tenant => tenant.building_no);
+
+        return allProperties.filter( property=> rentedOutSectionIds.includes(property.propertyNo)).length;
     }
 
-    /**
-     * Gets the total rent collected for the current month.
-     * 
-     * @param user_id The ID of the user to filter rents.
-     * @returns A Promise resolving to the total rent for the current month.
-     */
-    async getTotalRentCurrentMonth(user_id: string): Promise<number> {
-        try {
-            const currentMonth = new Date().getMonth() + 1;
-            const currentYear = new Date().getFullYear();
+    // Total number of building by user ID those are not rent out
+    public async countEmptyBuildings(userId: string) {
+        const allProperties = await Property.find({user_id:userId});
+        const rentedOutBuildinds = await Tenant.find({ user_id: userId });
+        const rentedOutBuildingsNO = rentedOutBuildinds.map(tenant => tenant.building_no);
 
-            const rentData = await Tenant.aggregate([
-                {
-                    $match: {
-                        user_id: user_id,
-                        month: currentMonth,
-                        year: currentYear,
-                    },
-                },
-                {
-                    $group: {
-                        _id: null,
-                        totalRent: { $sum: '$monthly_rent' }
-                    }
-                }
-            ]).exec();
-
-            return rentData.length > 0 ? rentData[0].totalRent : 0;
-        } catch (error) {
-            console.error('Error getting total rent for current month:', error);
-            throw new Error('Could not fetch total rent for the current month.');
-        }
+        return allProperties.filter( property=> !rentedOutBuildingsNO.includes(property.propertyNo)).length;
     }
 
-    
-    
-       /**
-     * Fetch the count of rents with specific dues condition.
-     * 
-     * @param user_id The ID of the user.
-     * @param duesCondition The dues condition to match (e.g., 0 for collected rent, >0 for due rent).
-     * @returns A Promise resolving to the count of rents.
-     */
-      
-       async getRentCountByDues(user_id: string, duesCondition: any): Promise<number> {
-        try {
-            return await Rent.countDocuments({ user_id, dues: duesCondition }).exec();
-        } catch (error) {
-            console.error('Error getting rent count by dues:', error);
-            throw new Error('Could not fetch rent count by dues.');
-        }
-    }   
-    
-     /**
-     * Fetch distinct building numbers that are occupied by tenants.
-     * 
-     * @param user_id The ID of the user.
-     * @returns A Promise resolving to an array of building numbers.
-     */
-     async getOccupiedBuildingNumbersFromTenants(user_id: string): Promise<string[]> {
-        try {
-            return await Tenant.distinct('building_no', { user_id }).exec();
-        } catch (error) {
-            console.error('Error getting occupied building numbers from tenants:', error);
-            throw new Error('Could not fetch occupied building numbers from tenants.');
-        }
+
+    // Total number of empty section  
+    public async countEmptySections(userId: string) {
+        const allSections = await Section.find({user_id:userId});
+        const rentedOutSections = await Tenant.find({ user_id: userId });
+        const rentedOutSectionIds = rentedOutSections.map(tenant => tenant.sectionName);
+
+        return allSections.filter(section => !rentedOutSectionIds.includes(section.sectionName)).length;
     }
 
-    /**
-     * Fetch distinct building numbers that have rent records.
-     * 
-     * @param user_id The ID of the user.
-     * @returns A Promise resolving to an array of building numbers.
-     */
-    async getOccupiedBuildingNumbersFromRents(user_id: string): Promise<string[]> {
-        try {
-            return await Rent.distinct('building_no', { user_id }).exec();
-        } catch (error) {
-            console.error('Error getting occupied building numbers from rents:', error);
-            throw new Error('Could not fetch occupied building numbers from rents.');
-        }
-    }
 
-    async getTenantsInRent(user_id:string): Promise<number>{
-        try {
-            return await Rent.countDocuments({ user_id }).exec();
-        } catch (error) {
-            console.error('Error getting occupied building numbers from rents:', error);
-            throw new Error('Could not fetch occupied building numbers from rents.');
-        }
+    // Get total number of sections are under constructions 
+    public async countUnderConstructionSections(userId: string) {
+        const allSections = await Section.find({user_id:userId});
+        const allExpense = await Expense.find({ user_id: userId });
+        const underConstructionsSectionNO=allExpense.map(expense=>expense.sectionName)
+        return allSections.filter(section => underConstructionsSectionNO.includes(section.sectionName)).length
     }
     
 
-    /**
-     * Fetch the count of vacant properties (not occupied by any tenant or rent).
-     * 
-     * @param user_id The ID of the user.
-     * @param occupiedBuildingNumbers Array of building numbers that are occupied.
-     * @returns A Promise resolving to the count of vacant properties.
-     */
-    async getVacantPropertiesCount(user_id: string, occupiedBuildingNumbers: string[]): Promise<number> {
-        try {
-            return await Property.countDocuments({ 
-                user_id, 
-                propertyNo: { $nin: occupiedBuildingNumbers }
-            }).exec();
-        } catch (error) {
-            console.error('Error getting vacant properties count:', error);
-            throw new Error('Could not fetch vacant properties count.');
-        }
+    // Get total number of Buildings are under constructions 
+    public async countUnderConstructionBuildings(userId: string) {
+        const allProperty = await Property.find({user_id:userId});
+        const allExpense = await Expense.find({ user_id: userId });
+        const underConstructionsBuildingsNO=allExpense.map(expense=>expense.building_no)
+        return allProperty.filter(property => underConstructionsBuildingsNO.includes(property.propertyNo)).length
+    }
+
+    
+    // get the current Month collected Rent 
+
+    public async getCurrentMonthlyRent(userId: string) {
+        const tenants = await Tenant.find({ user_id: userId });
+
+        return tenants.reduce((sum, rent) => sum + rent.monthly_rent, 0);
+    }
+
+
+
+    // Get total  dues
+
+    public async getTotalDues(userId: string) {
+        const rents = await Rent.find({ user_id: userId });
+        return rents.reduce((sum, rent) => sum + rent.dues, 0);
     }
     
+    // Get total expnses
+    public async getTotalExpenses(userId: string) {
+        const expenses = await Expense.find({ user_id: userId });
+        return expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    }
 }

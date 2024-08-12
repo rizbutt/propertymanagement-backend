@@ -9,6 +9,7 @@ export interface IExpenses extends Document{
      amount:number, 
      payment_date:Date, 
      payment_purpose:string,
+     sectionName?:string,
      user_id:mongoose.Schema.Types.ObjectId,
 
      createdAt?: Date;

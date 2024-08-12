@@ -48,14 +48,6 @@ export interface IProperty extends Document {
     bathrooms: number;
     additionalFeatures?: string;
   };
-  sections?: [{
-    sectionName?: string; // Dynamically named by the user (e.g., "section1", "section2")
-    sectionType?: 'Shared' | 'Single';
-    rooms?: number;
-    lobbies?:number;
-    kitchens?: number;
-    bathrooms?: number;
-  }]; // Array of dynamically named sections
   user_id: mongoose.Schema.Types.ObjectId; // Reference to the user model
   createdAt?: Date;
   updatedAt?: Date;

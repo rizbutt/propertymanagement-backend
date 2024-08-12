@@ -21,7 +21,7 @@ export async function GET(req: ExtendedNextRequest) {
         return NextResponse.json({ error: 'User ID not found' }, { status: 400 });
       } 
 
-      const fetched_dashboard_metrics = await dashboard_service.getDashboardMetrics(user_id); 
+      const fetched_dashboard_metrics = await dashboard_service.getDashboardData(user_id); 
 
       return NextResponse.json(fetched_dashboard_metrics, { status: 200 });
     } catch (error) {
