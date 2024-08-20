@@ -9,9 +9,9 @@ const RentSchema: Schema=new Schema<IExpenses>({
     item_no:{ type:Number, required:true},
     item_quantity:{ type:Number, required:true},
     amount:{ type:Number, required:true}, 
-    payment_date:{ type:Date, required:true}, 
+    payment_date:{ type:String, required:true}, 
     payment_purpose:{ type:String, required:true},
-    sectionName:{type: String},
+    sectionName:{type: String, required: true},
     user_id:{type: mongoose.Schema.Types.ObjectId,ref:'User', required:true},
 
     createdAt: { type: Date, default: Date.now },
