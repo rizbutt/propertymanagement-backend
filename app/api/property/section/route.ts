@@ -4,6 +4,7 @@ import dbConnect from '@/utils/db_connect_util';
 import { authMiddleware } from '@/middlewares/auth_middleware';
 import { NextResponse } from 'next/server';
 import { validateModelData } from '@/utils/validation_util';
+import PropertyModel from '@/models/property_model';
 
 export async function POST(req: ExtendedNextRequest) {
     await dbConnect(); // Connect to the database
@@ -77,11 +78,18 @@ export async function POST(req: ExtendedNextRequest) {
       
       // Extract property_no from query parameters instead of body
       const property_no = req.nextUrl.searchParams.get('property_no');
-
+      
       if (!property_no) {
           return NextResponse.json({ error: 'Property number is required' }, { status: 400 });
       }
     
+      //check if this property exist
+      const propertyExist = await PropertyModel.findOne({ propertyNo: property_no,user_id:user_id });
+      if (!propertyExist) {
+        return NextResponse.json({ error: 'Property does not exist' }, { status: 404});
+      }
+
+      
       const fetched_property_data = await section_service.fetchSectionsByPropertyNo(property_no,user_id); // Save property to database
       return NextResponse.json(fetched_property_data, { status: 200 });
     } catch (error) {
