@@ -27,7 +27,7 @@ export async function POST(req: ExtendedNextRequest) {
       ...await req.json(),
       user_id: user_id, // Attach user ID to Expense data
     };
-
+    
       // check if user input data correct and data type
 
     const modelName = 'Expense'; 
