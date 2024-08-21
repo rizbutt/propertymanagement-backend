@@ -5,6 +5,7 @@ import { authMiddleware } from '@/middlewares/auth_middleware';
 import { NextResponse } from 'next/server';
 import { validateModelData } from '@/utils/validation_util';
 import PropertyModel from '@/models/property_model';
+import SectionModel from '@/models/section_model';
 
 export async function POST(req: ExtendedNextRequest) {
     await dbConnect(); // Connect to the database
@@ -27,6 +28,11 @@ export async function POST(req: ExtendedNextRequest) {
             user_id: user_id, // Attach user ID to section data
      };
      console.log(sectionData)
+     const sectionName =await SectionModel.findOne({sectionName:sectionData.sectionName})
+    if(sectionName){
+      return NextResponse.json({ error: 'section Name already exists' }, { status: 400 });
+    }
+    //
         
      // check if user input data correct and data type
 

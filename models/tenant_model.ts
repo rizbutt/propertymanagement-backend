@@ -9,7 +9,7 @@ const TenantSchema: Schema = new Schema<ITenant>({
     building_name:{type: String, required:true},
     monthly_rent: { type: Number, required: true },
     security: { type: Number, required: true },
-    passport_no: { type: String, required: true },
+    passport_no: { type: String, required: true ,unique:true},
     building_address: { type: String, required: true },
     contact_no: { type: String, required: true },
     sectionName:{type: String ,required:true},
