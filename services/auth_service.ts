@@ -43,11 +43,7 @@ class AuthService {
       throw new Error('Invalid credentials');
     }
     
-    console.log('Stored Hash:', user.password);
-    console.log('Entered Password:', loginDTO.password);
-
     const isMatch = await bcrypt.compare(loginDTO.password,user.password);
-    console.log('Password Match Result:', isMatch);
     if (!isMatch) {
       throw new Error('Invalid credentials');
     }

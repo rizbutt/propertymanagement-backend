@@ -20,19 +20,32 @@ class TenantService {
   user will select specific name from list of tenants list 
   */
 
-  async fetchTenants(userId: string): Promise<TenantData>{
+  async fetchTenants(userId: string): Promise<ITenant[]>{
     const allTenants =await this.tenantRepository.fetchAllTenants(userId);
-    const tenant_data:TenantData={
-       tenant_names:[]
-    }
-
-    allTenants.forEach((tenant)=> {
-      tenant_data.tenant_names.push(tenant.name);
-      
-    });
-    return tenant_data;
+   
+    return allTenants;
   }
 
-}
+   // Update a Tenant by property number and user ID
+   async updateTenantByPassportNo(userId: string, passportNo: string, updateData: Partial<ITenant>): Promise<ITenant | null> {
+    const updatedTenant = await this.tenantRepository.updateTenantByPassportAndUserId(userId, passportNo, updateData);
 
+    if (!updatedTenant) {
+      throw new Error("Tenant not found or could not be updated.");
+    }
+
+    return updatedTenant;
+  }
+
+
+  // Delete a Tenant by property number and user ID
+  async deleteTenant(userId: string, passportNo: string): Promise<ITenant | null> {
+    const deletedTenant = await this.tenantRepository.deleteTenantByPassportAndUserId(userId, passportNo);
+
+    if (!deletedTenant) {
+      throw new Error("Property not found or could not be deleted.");
+    }
+    return deletedTenant;
+}
+}
 export default TenantService;

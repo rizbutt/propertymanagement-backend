@@ -5,7 +5,8 @@ import mongoose,{ Model, Schema } from "mongoose";
 const RentSchema: Schema=new Schema<IRent>({
     building_no:{type:String,required:true},
     building_name:{type:String,required:true},
-    tenant_name:{type:String,required:true},
+    building_address:{type:String,required:true},
+    tenant_name:{type:String,required:true,unique:true},
     room_no:{type:Number,required:true},
     collection_date:{type:Date,required:true},
     dues:{type:Number,required:true},

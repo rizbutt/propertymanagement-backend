@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 export interface ITenant extends Document {
     name: string;
     building_no: string;
+    building_name:string;
     monthly_rent: number;
     security: number;
     passport_no: string;

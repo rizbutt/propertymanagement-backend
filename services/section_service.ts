@@ -27,15 +27,38 @@ class SectionService {
 
         // Fetch all existing sections within the property
         const existingSections = await this.sectionRepository.getSectionsByPropertyNo(sectionData.property_no);
-
+        console.log(existingSections,"existing")
         const totalResources = {
             rooms: property.buildingDetails.rooms,
             kitchens: property.buildingDetails.kitchens,
             bathrooms: property.buildingDetails.bathrooms,
+            bedrooms: property.buildingDetails.bedrooms,
             lobbies: property.buildingDetails.lobbies
         };
+        console.log(totalResources)
+        if(totalResources.rooms<sectionData.rooms){
+            throw new Error(`Not enough rooms to create the section, there are 
+                total ${totalResources.rooms} rooms`)
+        }
+        if(totalResources.kitchens<sectionData.kitchens){
+            throw new Error(`Not enough kitchens to create the section, there are 
+                total ${totalResources.kitchens} kitchens`)
+        }
+        if(totalResources.bedrooms<sectionData.bedrooms){
+            throw new Error(`Not enough bedrooms to create the section, there are 
+                total ${totalResources.bedrooms} bedrooms `)
+        }
+        if(totalResources.lobbies<sectionData.lobbies){
+            throw new Error(`Not enough lobbies to create the section, there are 
+                total ${totalResources.lobbies} lobbies`)
+        }
+        if(totalResources.bathrooms<sectionData.bathrooms){
+            throw new Error(`Not enough bathrooms to create the section, there are 
+                total ${totalResources.bathrooms} bathrooms`)
+        }
 
         if (existingSections.length === 0) {
+
             // No existing sections, create the main section and automatically generate a second section
 
             const createdSection = await this.sectionRepository.createSection(sectionData);
@@ -45,12 +68,14 @@ class SectionService {
                 rooms: totalResources.rooms - sectionData.rooms,
                 kitchens: totalResources.kitchens - sectionData.kitchens,
                 bathrooms: totalResources.bathrooms - sectionData.bathrooms,
+                bedrooms: property.buildingDetails.bedrooms-sectionData.bedrooms,
                 lobbies: totalResources.lobbies - sectionData.lobbies,
             };
+            console.log(remainingDetails,"remaing")
 
             // Automatically create a new section with remaining details if applicable
             if (remainingDetails.rooms > 0 || remainingDetails.kitchens > 0 || 
-                remainingDetails.bathrooms > 0 || remainingDetails.lobbies > 0) {
+                remainingDetails.bathrooms > 0 || remainingDetails.lobbies > 0 || remainingDetails.bedrooms>0) {
                 
                 const autoSectionName = `Section ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 1000)}`;
 
@@ -61,6 +86,7 @@ class SectionService {
                     rooms: remainingDetails.rooms > 0 ? remainingDetails.rooms : 1, // Ensure at least 1 room
                     kitchens: remainingDetails.kitchens,
                     bathrooms: remainingDetails.bathrooms,
+                    bedrooms: remainingDetails.bedrooms,
                     lobbies: remainingDetails.lobbies,
                     user_id: sectionData.user_id,
                 } as ISection);
@@ -75,8 +101,10 @@ class SectionService {
                 rooms: sectionData.rooms,
                 kitchens: sectionData.kitchens,
                 bathrooms: sectionData.bathrooms,
+                bedrooms:sectionData.bedrooms,
                 lobbies: sectionData.lobbies
             };
+            console.log(remainingResources,"remaing")
 
             for (let section of existingSections) {
                 if (remainingResources.rooms > 0 && section.rooms > 0) {
@@ -94,6 +122,11 @@ class SectionService {
                     section.bathrooms -= diff;
                     remainingResources.bathrooms -= diff;
                 }
+                if (remainingResources.bedrooms > 0 && section.bedrooms > 0) {
+                    const diff = Math.min(section.bedrooms, remainingResources.bedrooms);
+                    section.bedrooms -= diff;
+                    remainingResources.bedrooms -= diff;
+                }
                 if (remainingResources.lobbies > 0 && section.lobbies > 0) {
                     const diff = Math.min(section.lobbies, remainingResources.lobbies);
                     section.lobbies -= diff;
@@ -104,14 +137,14 @@ class SectionService {
                 await this.sectionRepository.updateSection(section.id, section);
 
                 if (remainingResources.rooms === 0 && remainingResources.kitchens === 0 &&
-                    remainingResources.bathrooms === 0 && remainingResources.lobbies === 0) {
+                    remainingResources.bathrooms === 0 && remainingResources.lobbies === 0 && remainingResources.bedrooms===0 ) {
                     break;
                 }
             }
 
             // If there's still a resource left, it means the distribution wasn't possible
             if (remainingResources.rooms > 0 || remainingResources.kitchens > 0 ||
-                remainingResources.bathrooms > 0 || remainingResources.lobbies > 0) {
+                remainingResources.bathrooms > 0 || remainingResources.lobbies > 0 || remainingResources.bedrooms>0) {
                 throw new Error('Not enough resources available for the new section');
             }
 

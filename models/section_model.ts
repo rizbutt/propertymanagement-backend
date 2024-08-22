@@ -5,7 +5,7 @@ import mongoose,{ Model, Schema } from "mongoose"
         
  const SectionSchema: Schema=new Schema<ISection>({ 
         property_no:{type: String,required:true},
-        sectionName: { type: String,required:true}, 
+        sectionName: { type: String,required:true,unique:true}, 
         sectionType: { type: String, enum: ['Shared', 'Single'],required:true },
         rooms: { type: Number,required:true },
         kitchens: { type: Number,required:true},
