@@ -8,7 +8,10 @@ export class ExpenseRepository {
     
     return await expense.save();
   }
-
+   // fetching all expenses data  rent  to tenant  service
+  async fetchAllExpenses(user_id: string): Promise<IExpenses[]> {
+    return await Expense.find({ user_id: user_id }).populate('user_id').exec();
+  }
  
    //update Expense by passoport unique and user id
    async updateExpenseByreceiptAndUserId(userId: string, receiptNo: string, updateData: Partial<IExpenses>): Promise<IExpenses | null> {

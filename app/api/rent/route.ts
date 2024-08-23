@@ -56,6 +56,39 @@ export async function POST(req: ExtendedNextRequest) {
 }
 
 
+export async function GET(req: ExtendedNextRequest) {
+  await dbConnect();
+  const rent_service=new RentService()
+
+  const isAuthenticated = await authMiddleware(req);
+
+  if (!isAuthenticated) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const user_id = req.user?.id; // Extract user ID from authenticated user
+
+    if (!user_id) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 400 });
+    } 
+    
+    //check if this property exist
+    const propertyExist = await RentModel.findOne({ user_id:user_id });
+    if (!propertyExist) {
+      return NextResponse.json({ error: 'Property does not exist' }, { status: 404});
+    }
+
+    
+    const fetched_property_data = await rent_service.fetchRents(user_id); // Save property to database
+    return NextResponse.json(fetched_property_data, { status: 200 });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}
+
+
 export async function PUT(req: ExtendedNextRequest) {
   await dbConnect();
   const rent_service=new RentService()
@@ -73,7 +106,8 @@ export async function PUT(req: ExtendedNextRequest) {
       return NextResponse.json({ error: 'User ID not found' }, { status: 400 });
     } 
     
-    const tenantName = req.nextUrl.searchParams.get('tenantName');
+    const tenantName = req.nextUrl.searchParams.get('tenant_name');
+    console.log(tenantName)
 
     if (!tenantName) {
       return NextResponse.json({ error: 'tenantName number is required' }, { status: 400 });

@@ -121,7 +121,7 @@ export async function PUT(req: ExtendedNextRequest) {
     ...await req.json(),
     user_id: user_id, // Attach user ID to property data    // req.body is not valid in Next.js API routes, use req.json() instead
   };
-  
+   console.log(updatedData)
     
     const updatedProperty = await property_service.updateProperty(user_id, property_no, updatedData);
     return NextResponse.json(updatedProperty, { status: 200 });
