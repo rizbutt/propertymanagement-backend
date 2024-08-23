@@ -56,6 +56,38 @@ export async function POST(req: ExtendedNextRequest) {
   }
 }
 
+export async function GET(req: ExtendedNextRequest) {
+  await dbConnect();
+  const expense_service=new ExpenseService()
+
+  const isAuthenticated = await authMiddleware(req);
+
+  if (!isAuthenticated) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const user_id = req.user?.id; // Extract user ID from authenticated user
+
+    if (!user_id) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 400 });
+    } 
+    
+    //check if this property exist
+    const propertyExist = await ExpenseModel.findOne({ user_id:user_id });
+    if (!propertyExist) {
+      return NextResponse.json({ error: 'Property does not exist' }, { status: 404});
+    }
+
+    
+    const fetched_property_data = await expense_service.fetchExpenses(user_id); // Save property to database
+    return NextResponse.json(fetched_property_data, { status: 200 });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}
+
 export async function PUT(req: ExtendedNextRequest) {
   await dbConnect();
   const expense_service=new ExpenseService()

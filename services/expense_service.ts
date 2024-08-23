@@ -11,6 +11,11 @@ export class ExpenseService {
     return await this.ExpenseRepository.create(ExpenseData);
   }
  
+  async fetchExpenses(userId: string): Promise<IExpenses[]>{
+    const allExpense =await this.ExpenseRepository.fetchAllExpenses(userId);
+   
+    return allExpense;
+  }
   // Update a Expense by Expense number and user ID
   async updateExpense(userId: string, receiptNo: string, updateData: Partial<IExpenses>): Promise<IExpenses | null> {
     const updatedExpense = await this.ExpenseRepository.updateExpenseByreceiptAndUserId(userId, receiptNo, updateData);

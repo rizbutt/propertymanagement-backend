@@ -10,6 +10,12 @@ export class RentService {
   async addNewRent(RentData: IRent): Promise<IRent> {
     return await this.RentRepository.create(RentData);
   }
+
+  async fetchRents(userId: string): Promise<IRent[]>{
+    const allTenants =await this.RentRepository.fetchAllTenants(userId);
+   
+    return allTenants;
+  }
  
     // Update a property by property number and user ID
     async updateRentBytenantName(userId: string, tenantName: string, updateData: Partial<IRent>): Promise<IRent | null> {
