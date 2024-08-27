@@ -9,6 +9,7 @@ const RentSchema: Schema=new Schema<IRent>({
     tenant_name:{type:String,required:true,unique:true},
     room_no:{type:Number,required:true},
     collection_date:{type:Date,required:true},
+    collection_amount:{type:Number,required:true},
     dues:{type:Number,required:true},
     notes:{type:String},
     user_id:{type: mongoose.Schema.Types.ObjectId,ref:'User', required:true},

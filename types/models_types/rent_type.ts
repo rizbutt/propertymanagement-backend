@@ -7,6 +7,7 @@ export  interface IRent extends Document{
     tenant_name:string,
     room_no:number,
     collection_date:Date,
+    collection_amount:number,
     dues:number,
     notes?:string,
     user_id:mongoose.Schema.Types.ObjectId,

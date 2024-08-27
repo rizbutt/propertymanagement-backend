@@ -22,7 +22,6 @@ export async function POST(req: NextRequest) {
     // Hash the new password
     const saltRounds = 10; // Number of rounds for bcrypt
     const hashedPassword = await bycrypt.hash(newPassword, saltRounds);
-    console.log(newPassword)
     user.password = hashedPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;

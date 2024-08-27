@@ -10,7 +10,7 @@ const ExpenseSchema: Schema=new Schema<IExpenses>({
     item_quantity:{ type:Number, required:true},
     amount:{ type:Number, required:true}, 
     payment_date:{ type:String, required:true}, 
-    payment_purpose:{ type:String, required:true},
+    payment_purpose:{ type:String, required:true,enum:['maintenance' , 'others']},
     sectionName:{type: String, required: true},
     user_id:{type: mongoose.Schema.Types.ObjectId,ref:'User', required:true},
 

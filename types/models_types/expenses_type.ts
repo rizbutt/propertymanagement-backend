@@ -8,7 +8,7 @@ export interface IExpenses extends Document{
      item_quantity:number
      amount:number, 
      payment_date:string, 
-     payment_purpose:string,
+     payment_purpose:'maintenance' | 'others',
      sectionName:string,
      user_id:mongoose.Schema.Types.ObjectId,
 

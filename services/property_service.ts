@@ -29,7 +29,6 @@ export class PropertyService {
  async FetchingUserPropertiesData(userId: string): Promise<IProperty[]> {
   const allProperty = await this.propertyRepository.getAllPropertiesOfSpecificUser(userId);
 
-   console.log(allProperty)
   return allProperty;
 }
 
