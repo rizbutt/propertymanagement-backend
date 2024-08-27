@@ -29,9 +29,10 @@ export class RentRepository {
   
   //delete Rent by tenantNameo
   async deleteRentBytenantNamedUserId(userId: string, tenantName: string): Promise<IRent | null> {
+    const tenantNameRegex = new RegExp(`^${tenantName}$`, 'i');
     return await RentModel.findOneAndDelete({
       user_id: userId,
-      tenant_name: tenantName
+      tenant_name: tenantNameRegex
     });
   }
 }

@@ -74,9 +74,9 @@ export async function GET(req: ExtendedNextRequest) {
     } 
     
     //check if this property exist
-    const propertyExist = await RentModel.findOne({ user_id:user_id });
-    if (!propertyExist) {
-      return NextResponse.json({ error: 'Property does not exist' }, { status: 404});
+    const rentExist = await RentModel.findOne({ user_id:user_id });
+    if (!rentExist) {
+      return NextResponse.json({ error: 'rents does not exist' }, { status: 404});
     }
 
     
@@ -107,10 +107,9 @@ export async function PUT(req: ExtendedNextRequest) {
     } 
     
     const tenantName = req.nextUrl.searchParams.get('tenant_name');
-    console.log(tenantName)
 
     if (!tenantName) {
-      return NextResponse.json({ error: 'tenantName number is required' }, { status: 400 });
+      return NextResponse.json({ error: 'tenant_name number is required' }, { status: 400 });
   }
   const updatedData = {
     ...await req.json(),
@@ -143,8 +142,7 @@ export async function DELETE(req: ExtendedNextRequest) {
       return NextResponse.json({ error: 'User ID not found' }, { status: 400 });
     } 
     
-    const tenantName = req.nextUrl.searchParams.get('tenantName');
-
+    const tenantName = req.nextUrl.searchParams.get('tenant_name');
     if (!tenantName) {
       return NextResponse.json({ error: 'tenantName number is required' }, { status: 400 });
   }

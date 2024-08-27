@@ -27,7 +27,6 @@ export async function POST(req: ExtendedNextRequest) {
             ...(await req.json()), // Use req.json() to parse the request body
             user_id: user_id, // Attach user ID to section data
      };
-     console.log(sectionData)
      const sectionName =await SectionModel.findOne({sectionName:sectionData.sectionName})
     if(sectionName){
       return NextResponse.json({ error: 'section Name already exists' }, { status: 400 });

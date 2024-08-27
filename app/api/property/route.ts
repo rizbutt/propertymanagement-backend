@@ -29,7 +29,6 @@ export async function POST(req: ExtendedNextRequest) {
       ...await req.json(), // req.body is not valid in Next.js API routes, use req.json() instead
       user_id: user_id, // Attach user ID to property data
     };
-    console.log(propertyData.propertyNo)
 
     const propertyExist =await PropertyModel.findOne({propertyNo:propertyData.propertyNo})
     if(propertyExist){
@@ -94,7 +93,6 @@ export async function GET(req: ExtendedNextRequest) {
 
  
 export async function PUT(req: ExtendedNextRequest) {
-  console.log('enter PUT')
   await dbConnect();
   const property_service=new PropertyService()
 
@@ -121,7 +119,6 @@ export async function PUT(req: ExtendedNextRequest) {
     ...await req.json(),
     user_id: user_id, // Attach user ID to property data    // req.body is not valid in Next.js API routes, use req.json() instead
   };
-   console.log(updatedData)
     
     const updatedProperty = await property_service.updateProperty(user_id, property_no, updatedData);
     return NextResponse.json(updatedProperty, { status: 200 });

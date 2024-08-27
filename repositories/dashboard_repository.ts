@@ -78,9 +78,9 @@ export class DashboardRepository {
     // get the current Month collected Rent 
 
     public async getCurrentMonthlyRent(userId: string) {
-        const tenants = await Tenant.find({ user_id: userId });
+        const rents = await Rent.find({ user_id: userId });
 
-        return tenants.reduce((sum, rent) => sum + rent.monthly_rent, 0);
+        return rents.reduce((sum, rent) => sum + rent.collection_amount, 0);
     }
 
 

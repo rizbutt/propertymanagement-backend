@@ -27,7 +27,6 @@ class SectionService {
 
         // Fetch all existing sections within the property
         const existingSections = await this.sectionRepository.getSectionsByPropertyNo(sectionData.property_no);
-        console.log(existingSections,"existing")
         const totalResources = {
             rooms: property.buildingDetails.rooms,
             kitchens: property.buildingDetails.kitchens,
@@ -35,7 +34,6 @@ class SectionService {
             bedrooms: property.buildingDetails.bedrooms,
             lobbies: property.buildingDetails.lobbies
         };
-        console.log(totalResources)
         if(totalResources.rooms<sectionData.rooms){
             throw new Error(`Not enough rooms to create the section, there are 
                 total ${totalResources.rooms} rooms`)
@@ -71,7 +69,6 @@ class SectionService {
                 bedrooms: property.buildingDetails.bedrooms-sectionData.bedrooms,
                 lobbies: totalResources.lobbies - sectionData.lobbies,
             };
-            console.log(remainingDetails,"remaing")
 
             // Automatically create a new section with remaining details if applicable
             if (remainingDetails.rooms > 0 || remainingDetails.kitchens > 0 || 
@@ -104,7 +101,6 @@ class SectionService {
                 bedrooms:sectionData.bedrooms,
                 lobbies: sectionData.lobbies
             };
-            console.log(remainingResources,"remaing")
 
             for (let section of existingSections) {
                 if (remainingResources.rooms > 0 && section.rooms > 0) {

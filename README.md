@@ -156,7 +156,7 @@ Open http://localhost:3000 with your browser to see the result.
 
 
 ### GET /api/property
-- **Description**: To get all properties property_no[],building_names[] and building_address
+- **Description**: To get all properties with user id
 - **Response**:
 - **200 OK**: The property data got.
 - **400 Bad Request**: user id not found use bearer token in auth
@@ -203,3 +203,25 @@ Open http://localhost:3000 with your browser to see the result.
 - **Response**:
 - **201 OK**: The expense is created successfully
 - **400 Bad Request**: user id not found use bearer token in auth
+- **404 Not Found**: property not exist
+
+
+
+### GET /api/expense
+- **Description**: To get all expenses of a property with user id
+- **Response**:
+- **200 OK**: The expense data got.
+- **400 Bad Request**: user id not found use bearer token in auth
+
+
+
+### GET /api/report?propertyNo=123&period=monthly&year=2022&month=2 or
+### GET /api/report?propertyNo=123&period=yearly&year=2022
+- **Description**: To get report of a property with user id propertyNO To get 1. leased amount 2. maintenance cost 
+      3. other expenses 4. avg no of rooms rented 
+      5. avg no of rooms remained empty 
+      6. revenue generated 7. profit/loss
+      BY Monthly or Yearly
+- **Response**:
+- **200 OK**: The report data got.
+
