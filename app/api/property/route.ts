@@ -5,10 +5,13 @@ import { authMiddleware } from '@/middlewares/auth_middleware';
 import { ExtendedNextRequest } from '@/types/extended_next_request';
 import { validateModelData } from '@/utils/validation_util';
 import PropertyModel from '@/models/property_model';
+import { LogService } from '@/services/log_service';
 
 export async function POST(req: ExtendedNextRequest) {
   await dbConnect();
-  const property_service=new PropertyService()
+  const property_service=new PropertyService();
+  const logService = new LogService();
+
 
   const isAuthenticated = await authMiddleware(req);
 
@@ -47,6 +50,14 @@ export async function POST(req: ExtendedNextRequest) {
     }
 
     const property = await property_service.addNewProperty(propertyData); // Save property to database
+
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: propertyData,
+      user_id:user_id
+    })
     return NextResponse.json(property, { status: 201 });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -95,6 +106,7 @@ export async function GET(req: ExtendedNextRequest) {
 export async function PUT(req: ExtendedNextRequest) {
   await dbConnect();
   const property_service=new PropertyService()
+  const logService = new LogService();
 
   const isAuthenticated = await authMiddleware(req);
 
@@ -121,6 +133,13 @@ export async function PUT(req: ExtendedNextRequest) {
   };
     
     const updatedProperty = await property_service.updateProperty(user_id, property_no, updatedData);
+    // Log the request
+    await logService.createLog({
+      method:req.method,
+      path:req.url,
+      requestBody:updatedData,
+      user_id:user_id
+    });
     return NextResponse.json(updatedProperty, { status: 200 });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -137,7 +156,9 @@ export async function PUT(req: ExtendedNextRequest) {
  
  export async function DELETE(req: ExtendedNextRequest) {
   await dbConnect();
-  const property_service=new PropertyService()
+  const property_service=new PropertyService();
+  const logService = new LogService();
+
 
   const isAuthenticated = await authMiddleware(req);
 
@@ -159,6 +180,13 @@ export async function PUT(req: ExtendedNextRequest) {
   }
   
     const deleteProperty = await property_service.deleteProperty(user_id, property_no);
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: { property_no },
+      user_id:user_id
+      });
     return NextResponse.json(deleteProperty, { status: 200 });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';

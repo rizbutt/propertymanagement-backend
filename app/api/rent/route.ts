@@ -5,10 +5,12 @@ import { authMiddleware } from '@/middlewares/auth_middleware';
 import { ExtendedNextRequest } from '@/types/extended_next_request';
 import { validateModelData } from '@/utils/validation_util';
 import RentModel from '@/models/rent_model';
+import { LogService } from '@/services/log_service';
 
 export async function POST(req: ExtendedNextRequest) {
   await dbConnect();
   const rentService = new RentService();
+  const logService=new LogService();
   
   const isAuthenticated = await authMiddleware(req);
   if (!isAuthenticated) {
@@ -46,6 +48,13 @@ export async function POST(req: ExtendedNextRequest) {
     }
 
     const newRent = await rentService.addNewRent(RentData);
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: RentData,
+      user_id:user_id
+      });
     return NextResponse.json(newRent, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -92,7 +101,7 @@ export async function GET(req: ExtendedNextRequest) {
 export async function PUT(req: ExtendedNextRequest) {
   await dbConnect();
   const rent_service=new RentService()
-
+  const logService=new LogService();
   const isAuthenticated = await authMiddleware(req);
 
   if (!isAuthenticated) {
@@ -118,6 +127,13 @@ export async function PUT(req: ExtendedNextRequest) {
   
   
     const updateData = await rent_service.updateRentBytenantName(user_id, tenantName,updatedData);
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: updateData,
+      user_id:user_id
+      });
     return NextResponse.json(updateData, { status: 200 });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -127,7 +143,8 @@ export async function PUT(req: ExtendedNextRequest) {
 
 export async function DELETE(req: ExtendedNextRequest) {
   await dbConnect();
-  const rent_service=new RentService()
+  const rent_service=new RentService();
+  const logService=new LogService();
 
   const isAuthenticated = await authMiddleware(req);
 
@@ -148,6 +165,13 @@ export async function DELETE(req: ExtendedNextRequest) {
   }
   
     const deleterent = await rent_service.deleteRent(user_id, tenantName);
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: { tenantName },
+      user_id:user_id
+      });
     return NextResponse.json(deleterent, { status: 200 });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';

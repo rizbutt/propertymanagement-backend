@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { validateModelData } from '@/utils/validation_util';
 import PropertyModel from '@/models/property_model';
 import SectionModel from '@/models/section_model';
+import { LogService } from '@/services/log_service';
 
 export async function POST(req: ExtendedNextRequest) {
     await dbConnect(); // Connect to the database
@@ -46,8 +47,15 @@ export async function POST(req: ExtendedNextRequest) {
     }
 
         const sectionService = new SectionService(); // Create a new instance of SectionService
+        const logService=new LogService()
         const newSection = await sectionService.createAndDistributeSection(sectionData); // Create a new section
-
+        // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: sectionData,
+      user_id:user_id
+      });
         return NextResponse.json(newSection, { status: 201 }); // Respond with the created section
         
     } catch (error) {
@@ -105,4 +113,87 @@ export async function POST(req: ExtendedNextRequest) {
   
   
   
+  export async function PUT(req: ExtendedNextRequest) {
+    await dbConnect();
+    const section_service=new SectionService()
+    const logService = new LogService();
   
+    const isAuthenticated = await authMiddleware(req);
+  
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  
+    try {
+      const user_id = req.user?.id; // Extract user ID from authenticated user
+  
+      if (!user_id) {
+        return NextResponse.json({ error: 'User ID not found' }, { status: 400 });
+      } 
+      
+      const section_name = req.nextUrl.searchParams.get('section_name');
+      
+      if (!section_name) {
+        return NextResponse.json({ error: 'section number is required' }, { status: 400 });
+    }
+  
+    const updatedData = {
+      ...await req.json(),
+      user_id: user_id, // Attach user ID to property data    // req.body is not valid in Next.js API routes, use req.json() instead
+    };
+      
+      const updatedProperty = await section_service.updateSectionBySectionName(user_id, section_name, updatedData);
+      // Log the request
+      await logService.createLog({
+        method:req.method,
+        path:req.url,
+        requestBody:updatedData,
+        user_id:user_id
+      });
+      return NextResponse.json(updatedProperty, { status: 200 });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+  }
+
+
+  export async function DELETE(req: ExtendedNextRequest) {
+    await dbConnect();
+    const section_service=new SectionService();
+    const logService = new LogService();
+  
+  
+    const isAuthenticated = await authMiddleware(req);
+  
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  
+    try {
+      const user_id = req.user?.id; // Extract user ID from authenticated user
+  
+      if (!user_id) {
+        return NextResponse.json({ error: 'User ID not found' }, { status: 400 });
+      } 
+      
+      const section_name = req.nextUrl.searchParams.get('section_name');
+  
+      if (!section_name) {
+        return NextResponse.json({ error: 'section number is required' }, { status: 400 });
+    }
+    
+      const deleteProperty = await section_service.deleteSection(user_id, section_name);
+      // Log the request
+      await logService.createLog({
+        method: req.method,
+        path: req.url || '',
+        requestBody: { section_name },
+        user_id:user_id
+        });
+      return NextResponse.json(deleteProperty, { status: 200 });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+  }
