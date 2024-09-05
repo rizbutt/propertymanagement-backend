@@ -5,10 +5,12 @@ import { authMiddleware } from '@/middlewares/auth_middleware';
 import { ExtendedNextRequest } from '@/types/extended_next_request';
 import { validateModelData } from '@/utils/validation_util';
 import ExpenseModel from '@/models/expense_model';
+import { LogService } from '@/services/log_service';
 
 export async function POST(req: ExtendedNextRequest) {
   await dbConnect();
   const expenseService = new ExpenseService();
+  const logService=new LogService();
   
   const isAuthenticated = await authMiddleware(req);
   if (!isAuthenticated) {
@@ -47,6 +49,13 @@ export async function POST(req: ExtendedNextRequest) {
     }
 
     const newExpense = await expenseService.addNewExpense(ExpenseData);
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: ExpenseData,
+      user_id:user_id
+      });
     return NextResponse.json(newExpense, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -90,7 +99,8 @@ export async function GET(req: ExtendedNextRequest) {
 
 export async function PUT(req: ExtendedNextRequest) {
   await dbConnect();
-  const expense_service=new ExpenseService()
+  const expense_service=new ExpenseService();
+  const logService=new LogService();
 
   const isAuthenticated = await authMiddleware(req);
 
@@ -117,6 +127,13 @@ export async function PUT(req: ExtendedNextRequest) {
   
   
     const updateData = await expense_service.updateExpense(user_id, receipt_no,updatedData);
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: updateData,
+      user_id:user_id
+      });
     return NextResponse.json(updateData, { status: 200 });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -126,7 +143,8 @@ export async function PUT(req: ExtendedNextRequest) {
 
 export async function DELETE(req: ExtendedNextRequest) {
   await dbConnect();
-  const expense_service=new ExpenseService()
+  const expense_service=new ExpenseService();
+  const logService=new LogService();
 
   const isAuthenticated = await authMiddleware(req);
 
@@ -148,6 +166,13 @@ export async function DELETE(req: ExtendedNextRequest) {
   }
   
     const deleteProperty = await expense_service.deleteExpense(user_id, receipt_no);
+    // Log the request
+    await logService.createLog({
+      method: req.method,
+      path: req.url || '',
+      requestBody: { receipt_no },
+      user_id:user_id
+      });
     return NextResponse.json(deleteProperty, { status: 200 });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';

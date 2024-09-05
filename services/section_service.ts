@@ -160,6 +160,29 @@ class SectionService {
     async fetchSectionsByPropertyNo(propertyNo: string, userId: string): Promise<ISection[]> {
         return this.sectionRepository.getSectionsByPropertyNoAndUserId(propertyNo, userId);
     }
+
+
+    // Update a property by section name and user ID
+    async updateSectionBySectionName(userId: string, SectioName: string, updateData: Partial<ISection>): Promise<ISection | null> {
+        const updatedSection = await this.sectionRepository.updateSectionByNameAndUserId(userId, SectioName, updateData);
+    
+        if (!updatedSection) {
+          throw new Error("SectioName not found or could not be updated.");
+        }
+    
+        return updatedSection;
+      }
+    
+    
+      // Delete a Section by section name and user ID
+      async deleteSection(userId: string, SectioName: string): Promise<ISection | null> {
+        const deletedSection = await this.sectionRepository.deleteSectionByNameAndUserId(userId, SectioName);
+    
+        if (!deletedSection) {
+          throw new Error("SectioName not found or could not be deleted.");
+        }
+        return deletedSection;
+    }
 }
 
 export default SectionService;

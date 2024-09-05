@@ -20,14 +20,14 @@ export class DashboardRepository {
         return await Section.countDocuments({user_id:userId});
     }
 
-   // Total number of sections by user ID those are rent out
-    public async countRentedOutSections(userId: string) {
-        const allSections = await Section.find({user_id:userId});
-        const rentedOutSections = await Tenant.find({ user_id: userId });
-        const rentedOutSectionIds = rentedOutSections.map(tenant => tenant.sectionName);
+        // Total number of sections by user ID those are rent out
+     public async countRentedOutSections(userId: string) {
+         const allSections = await Section.find({ user_id: userId });
+         const rentedOutSections = await Tenant.find({ user_id: userId });
+         const rentedOutSectionNames = rentedOutSections.flatMap(tenant => tenant.sectionName); // Flatten sectionName array
 
-        return allSections.filter(section => rentedOutSectionIds.includes(section.sectionName)).length;
-    }
+         return allSections.filter(section => rentedOutSectionNames.includes(section.sectionName)).length;
+     }
     // Total number of building by user ID those are rent out
     public async countRentedOutBuildings(userId: string) {
         const allProperties = await Property.find({user_id:userId});
@@ -47,14 +47,14 @@ export class DashboardRepository {
     }
 
 
-    // Total number of empty section  
-    public async countEmptySections(userId: string) {
-        const allSections = await Section.find({user_id:userId});
-        const rentedOutSections = await Tenant.find({ user_id: userId });
-        const rentedOutSectionIds = rentedOutSections.map(tenant => tenant.sectionName);
+         // Total number of empty sections
+     public async countEmptySections(userId: string) {
+         const allSections = await Section.find({ user_id: userId });
+         const rentedOutSections = await Tenant.find({ user_id: userId });
+         const rentedOutSectionNames = rentedOutSections.flatMap(tenant => tenant.sectionName); // Flatten sectionName array
 
-        return allSections.filter(section => !rentedOutSectionIds.includes(section.sectionName)).length;
-    }
+         return allSections.filter(section => !rentedOutSectionNames.includes(section.sectionName)).length;
+     }
 
 
     // Get total number of sections are under constructions 

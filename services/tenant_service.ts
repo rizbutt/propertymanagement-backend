@@ -2,6 +2,7 @@ import { TenantData } from '@/types/tenant_data_type';
 import TenantRepository from '../repositories/tenant_repository';
 
 import { ITenant } from '@/types/models_types/tenant_type';
+import TenantModel from '@/models/tenant_model';
 
 class TenantService {
   private tenantRepository: TenantRepository;
@@ -36,6 +37,31 @@ class TenantService {
 
     return updatedTenant;
   }
+
+
+  // // Method to remove a sectionName from a tenant's record by passport number and user ID
+  // async removeSectionName(
+  //   userId: string,
+  //   passportNo: string,
+  //   sectionToRemove: string
+  // ): Promise<ITenant | null> {
+  //   try {
+  //     const updatedTenant = await TenantModel.findOneAndUpdate(
+  //       { user_id: userId, passport_no: passportNo },
+  //       { $pull: { sectionName: sectionToRemove } }, // Remove the specific sectionName
+  //       { new: true } // Return the updated document
+  //     );
+
+  //     if (!updatedTenant) {
+  //       throw new Error('Tenant not found');
+  //     }
+
+  //     return updatedTenant;
+  //   } catch (error) {
+  //     console.error('Error removing section:', error);
+  //     throw new Error('Failed to remove section');
+  //   }
+  // }
 
 
   // Delete a Tenant by property number and user ID

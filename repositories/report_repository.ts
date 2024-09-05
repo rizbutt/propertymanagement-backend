@@ -63,14 +63,15 @@ export class ReportRepository {
         });
         const totalRooms = allSections.reduce((sum, section) => sum + section.rooms, 0);
         // Find rented out sections
-        const rentedOutSections = tenants.map(tenant => tenant.sectionName);
+        const rentedOutSections = tenants.flatMap(tenant => tenant.sectionName); // Flatten sectionName array
         const rentedSections = allSections.filter(section => rentedOutSections.includes(section.sectionName));
+
         // Calculate average number of rented rooms
         const avgRentedRooms = rentedSections.reduce((sum, section) => sum + section.rooms, 0) / totalRooms || 0;
 
         // Calculate average number of empty rooms
         const notRentedSections = allSections.filter(section => !rentedOutSections.includes(section.sectionName));
-        const avgEmptyRooms = notRentedSections.reduce((sum, section) => sum + section.rooms, 0) / totalRooms ||0;
+        const avgEmptyRooms = notRentedSections.reduce((sum, section) => sum + section.rooms, 0) / totalRooms || 0;
         // Revenue generated is the same as the leased amount
         const allrents= await RentModel.find({
             user_id: userId,

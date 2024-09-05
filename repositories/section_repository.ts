@@ -40,6 +40,23 @@ class SectionRepository {
     async updateSection(sectionId: string, updatedData: Partial<ISection>): Promise<ISection | null> {
         return await SectionModel.findByIdAndUpdate(sectionId, updatedData, { new: true }).exec();
     }
+
+      /// Update a section by section number and user ID
+  async updateSectionByNameAndUserId(userId: string, section_Name: string, updateData: Partial<ISection>): Promise<ISection | null> {
+    return await SectionModel.findOneAndUpdate(
+      { user_id: userId, sectionName: section_Name },
+      { $set: updateData },
+      { new: true } // Return the updated document
+    );
+  }
+  
+  // Delete a section by section number and user ID
+  async deleteSectionByNameAndUserId(userId: string, section_Name: string): Promise<ISection | null> {
+    return await SectionModel.findOneAndDelete({
+      user_id: userId,
+      sectionName: section_Name
+    });
+  }
 }
 
 export default SectionRepository;
