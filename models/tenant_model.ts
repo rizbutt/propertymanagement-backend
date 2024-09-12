@@ -18,6 +18,17 @@ const TenantSchema: Schema = new Schema<ITenant>({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   });
+  TenantSchema.index({
+    name: 'text',
+    building_no:'text' ,
+    building_name:'text',
+    monthly_rent: 'text',
+    security: 'text',
+    passport_no: 'text',
+    building_address: 'text',
+    contact_no: 'text',
+    sectionName:'text'
+  })
   
 const TenantModel= mongoose.models.Tenant || mongoose.model<ITenant>('Tenant', TenantSchema);
 

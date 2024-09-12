@@ -18,6 +18,18 @@ const RentSchema: Schema=new Schema<IRent>({
     updatedAt: { type: Date, default: Date.now },
 })
 
+RentSchema.index({
+    building_no:'text' ,
+    building_name:'text',
+    building_address:'text',
+    tenant_name:'text',
+    room_no:'text',
+    collection_date:'text',
+    collection_amount:'text',
+    dues:'text',
+    notes:'text'
+})
+
 const RentModel= mongoose.models.Rent || mongoose.model<IRent>('Rent', RentSchema);
 
 export default RentModel as Model<IRent>
