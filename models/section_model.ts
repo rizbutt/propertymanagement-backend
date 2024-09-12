@@ -16,7 +16,17 @@ import mongoose,{ Model, Schema } from "mongoose"
 
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
-  } );     
+  } );
+  SectionSchema.index({
+      property_no:'text',
+      sectionName: 'text',
+      sectionType:'text',
+      rooms:'text',
+      kitchens:'text',
+      bathrooms:'text',
+      bedrooms:'text',
+      lobbies:'text',
+  })     
 
   const SectionModel= mongoose.models.Section || mongoose.model<ISection>('Section', SectionSchema);
 

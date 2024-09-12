@@ -17,6 +17,7 @@ const ExpenseSchema: Schema=new Schema<IExpenses>({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 })
+ExpenseSchema.index({ building_no: 'text', building_name: 'text', receipt_no: 'text', payment_purpose: 'text', sectionName: 'text' });
 
 const ExpenseModel= mongoose.models.Expense || mongoose.model<IExpenses>('Expense', ExpenseSchema);
 

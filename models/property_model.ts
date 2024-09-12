@@ -48,6 +48,28 @@ const PropertySchema: Schema = new Schema<IProperty>({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   });
+  // Create a text index on all relevant fields in the property model
+PropertySchema.index({
+  propertyNo: 'text',
+  ownerName: 'text',
+  address: 'text',
+  property_name: 'text',
+  property_type: 'text',
+  'contractDuration.from': 'text',
+  'contractDuration.to': 'text',
+  'bills.type': 'text',
+  'bills.accountNo': 'text',
+  ownership_type: 'text',
+  'buildingDetails.name': 'text',
+  'buildingDetails.address': 'text',
+  'buildingDetails.rooms': 'text',
+  'buildingDetails.kitchens': 'text',
+  'buildingDetails.lobbies': 'text',
+  'buildingDetails.bathrooms': 'text',
+  'buildingDetails.bedrooms': 'text',
+  'buildingDetails.additionalFeatures': 'text',
+  'building_images.description': 'text',
+});
   
   const PropertyModel= mongoose.models.Property || mongoose.model<IProperty>('Property', PropertySchema);
 
